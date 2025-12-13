@@ -22,20 +22,20 @@ This is a **Ulauncher Extension** written in Python that integrates Google's Gem
 ## Architecture
 
 ### Core Components
-- **main.py**: Single file containing all extension logic (590 lines)
+- **main.py**: Single file containing all extension logic (592 lines)
   - `GeminiExtension`: Main extension class handling Ulauncher integration
-  - `KeywordQueryEventListener`: Processes user queries and API interactions  
+  - `KeywordQueryEventListener`: Processes user queries and API interactions
   - `PreferencesEventListener`: Manages configuration changes
   - Helper functions for text formatting, logging, and markdown cleanup
 
 ### Key Architecture Patterns
 - **Event-driven**: Uses Ulauncher's event system for query handling and preference updates
-- **API Integration**: REST calls to Google Gemini API (`https://generativelanguage.googleapis.com/v1beta/`)
+- **API Integration**: REST calls to Google Gemini API (`https://generativelanguage.googleapis.com/v1beta/`) with configurable endpoint
 - **Text Processing**: Sophisticated multi-language text formatting with script-aware wrapping
 - **Error Handling**: Comprehensive exception handling for network, API, and configuration issues
 
 ### Configuration System
-- **manifest.json**: Defines 11 configurable preferences including API key, model selection, temperature, prompt context, and logging options
+- **manifest.json**: Defines 12 configurable preferences including API key, custom API URL, model selection, temperature, prompt context, and logging options
 - **versions.json**: Tracks API version compatibility
 - Preferences accessible via Ulauncher's extension settings UI
 
