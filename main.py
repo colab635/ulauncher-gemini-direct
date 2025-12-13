@@ -212,9 +212,10 @@ class KeywordQueryEventListener(EventListener):
         prefs = extension.preferences
         # Set defaults directly in the config dictionary
         config = {
+            'api_key': '',
+            'custom_api_url': '',
             'model': 'gemini-2.5-flash',
             'custom_model': '',
-            'api_key': '',
             'wrap_width': 43,
             'wide_script_factor': 0.96,
             'log_enabled': False,
@@ -226,9 +227,10 @@ class KeywordQueryEventListener(EventListener):
         }
 
         # Update config with preferences if they exist
+        config['api_key'] = prefs.get('api_key', config['api_key'])
+        config['custom_api_url'] = prefs.get('custom_api_url', config['custom_api_url']).strip()
         config['model'] = prefs.get('model', config['model'])
         config['custom_model'] = prefs.get('custom_model', config['custom_model']).strip()
-        config['api_key'] = prefs.get('api_key', config['api_key'])
         config['log_enabled'] = prefs.get('log_enabled', 'false') == 'true'
         config['show_log_line'] = prefs.get('show_log_line', 'true') == 'true'
         config['debug_mode'] = prefs.get('debug_mode', 'false') == 'true'
@@ -318,7 +320,8 @@ class KeywordQueryEventListener(EventListener):
 
     def _call_gemini_api(self, config, query):
         """Makes the API call to Gemini."""
-        url = f"https://generativelanguage.googleapis.com/v1beta/{config['model_to_use']}:generateContent"
+        base_url = config['custom_api_url'] if config['custom_api_url'] else "https://generativelanguage.googleapis.com/v1beta"
+        url = f"{base_url}/{config['model_to_use']}:generateContent"
         headers = {"Content-Type": "application/json"}
         params = {"key": config['api_key']}
         prompt = self._build_prompt(query, config['prompt_context'])
