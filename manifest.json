@@ -32,6 +32,13 @@
 			"default_value": ""
 		},
 		{
+			"id": "custom_api_url",
+			"type": "input",
+			"name": "Custom API URL",
+			"description": "Custom API endpoint for proxy support. Leave empty to use default Gemini API.",
+			"default_value": ""
+		},
+		{
 			"id": "model",
 			"type": "select",
 			"name": "Model",
