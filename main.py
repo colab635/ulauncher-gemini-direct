@@ -11,6 +11,9 @@ from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
 from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
 from ulauncher.api.shared.action.OpenUrlAction import OpenUrlAction
 from ulauncher.api.shared.action.CopyToClipboardAction import CopyToClipboardAction
+from ulauncher.api.shared.event import ItemEnterEvent
+from ulauncher.api.shared.event import BaseEvent
+
 
 # Hardcoded system prompt that will be included in every request
 SYSTEM_PROMPT = """You are responding through an ephemeral interface with no follow-up capability so you need to provide a single comprehensive response that does not ask for further clarifications/information.
@@ -502,9 +505,20 @@ class KeywordQueryEventListener(EventListener):
         return items
 
     # --- Main event handler ---
-    def on_event(self, event, extension):
-        query = event.get_argument() or ""
+    def on_event(self,  event: BaseEvent, extension):
+        query:str  = event.get_argument() or ""
         items = []
+
+        # wait for trigger
+        if not query.endswith('??'):
+            items.append(ExtensionResultItem(
+                icon='images/icon.png', # Use main extension icon for placeholder
+                name=f'Ask Gemini ({config["model_name"]})',
+                description='Type your question to get an AI-powered answer',
+                # No useful action on enter here, maybe copy placeholder?
+                on_enter=CopyToClipboardAction(f'Gemini Direct ({config["model_name"]}) ready.')
+            ))
+            return RenderResultListAction(items)
 
         try:
             config = self._load_preferences(extension)
@@ -522,16 +536,6 @@ class KeywordQueryEventListener(EventListener):
 
         debug_mode = config['debug_mode'] # Cache for easier access in exception handlers
 
-        # --- Handle empty query ---
-        if not query:
-            items.append(ExtensionResultItem(
-                icon='images/icon.png', # Use main extension icon for placeholder
-                name=f'Ask Gemini ({config["model_name"]})',
-                description='Type your question to get an AI-powered answer',
-                # No useful action on enter here, maybe copy placeholder?
-                on_enter=CopyToClipboardAction(f'Gemini Direct ({config["model_name"]}) ready.')
-            ))
-            return RenderResultListAction(items)
 
         # --- Handle missing API key ---
         if not config['api_key']:
