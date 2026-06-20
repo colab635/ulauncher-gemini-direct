@@ -508,17 +508,7 @@ class KeywordQueryEventListener(EventListener):
     def on_event(self,  event: BaseEvent, extension):
         query:str  = event.get_argument() or ""
         items = []
-
-        # wait for trigger
-        if not query.endswith('??'):
-            items.append(ExtensionResultItem(
-                icon='images/icon.png', # Use main extension icon for placeholder
-                name=f'Ask Gemini ({config["model_name"]})',
-                description='Type your question to get an AI-powered answer',
-                # No useful action on enter here, maybe copy placeholder?
-                on_enter=CopyToClipboardAction(f'Gemini Direct ({config["model_name"]}) ready.')
-            ))
-            return RenderResultListAction(items)
+        
 
         try:
             config = self._load_preferences(extension)
@@ -536,6 +526,16 @@ class KeywordQueryEventListener(EventListener):
 
         debug_mode = config['debug_mode'] # Cache for easier access in exception handlers
 
+        # --- Handle empty query ---
+        if not query.endswith('!'):
+            items.append(ExtensionResultItem(
+                icon='images/icon.png', # Use main extension icon for placeholder
+                name=f'Ask Gemini ({config["model_name"]})',
+                description='Type your question to get an AI-powered answer',
+                # No useful action on enter here, maybe copy placeholder?
+                on_enter=CopyToClipboardAction(f'Gemini Direct ({config["model_name"]}) ready.')
+            ))
+            return RenderResultListAction(items)
 
         # --- Handle missing API key ---
         if not config['api_key']:
